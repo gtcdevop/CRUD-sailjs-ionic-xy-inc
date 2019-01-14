@@ -1,13 +1,11 @@
+import { ProdutoProvider } from './../../providers/produto/produto';
+import { ProdutoModel } from './../../../../functions/src/index';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 /**
- * Generated class for the ListaProdutoPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
+ * pagina para listagem de produtos e edicao do mesmo
  */
-
 @IonicPage()
 @Component({
   selector: 'page-lista-produto',
@@ -15,11 +13,17 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class ListaProdutoPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+  public listaProdutos: ProdutoModel[] = [];
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ListaProdutoPage');
+  constructor(public navCtrl: NavController,
+    private _produtoProvider: ProdutoProvider) {
+
+    this._produtoProvider.getListaProduto().then(listaProdutos => {
+      this.listaProdutos = listaProdutos
+    })
+
+
   }
+  public
 
 }

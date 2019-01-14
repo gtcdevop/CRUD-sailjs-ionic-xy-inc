@@ -5,6 +5,32 @@
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
 
+.toast-success {
+  > div{
+       border-bottom:8px solid #32db64!important;
+   }
+}
+
+.toast-info {
+  > div{
+    border-bottom:8px solid #488aff !important;
+   }
+}
+
+.toast-alert {
+  > div{
+    border-bottom:8px solid gold !important;
+   }
+}
+
+.toast-error {
+  > div{
+    border-bottom:8px solid firebrick !important;
+   }
+}
+
+
+
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
