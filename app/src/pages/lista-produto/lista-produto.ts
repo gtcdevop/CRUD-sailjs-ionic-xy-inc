@@ -14,40 +14,57 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class ListaProdutoPage {
 
-  public listaProdutos: ProdutoModel[] = [
-    {
-      id: "Id1",
-      name: "Nome do Produto",
-      description: "Descricao",
-      price: 10,
-      category: "Products"
-    },
-    {
-      id: "Id2",
-      name: "Nome do Produto2",
-      description: "Descricao",
-      price: 10,
-      category: "Products"
-    },
+  public listaProdutos: ProdutoModel[];
 
-    {
-      id: "Id3",
-      name: "Nome do Produto3",
-      description: "Descricao",
-      price: 10,
-      category: "Products"
-    },
-  ];
+  // [
+  //   {
+  //     id: "Id1",
+  //     name: "Nome do Produto",
+  //     description: "Descricao",
+  //     price: 10,
+  //     category: "Products"
+  //   },
+  //   {
+  //     id: "Id2",
+  //     name: "Nome do Produto2",
+  //     description: "Descricao",
+  //     price: 10,
+  //     category: "Products"
+  //   },
+
+  //   {
+  //     id: "Id3",
+  //     name: "Nome do Produto3",
+  //     description: "Descricao",
+  //     price: 10,
+  //     category: "Products"
+  //   },
+  // ];
 
   constructor(public navCtrl: NavController,
     private _notificacaoProvider: NotificacaoProvider,
     private _produtoProvider: ProdutoProvider) {
 
-    this._produtoProvider.getListaProduto().then(listaProdutos => {
-      console.log(this.listaProdutos)
-      this.listaProdutos = listaProdutos
-    })
+  }
 
+  /**
+   * Ao carregar a pagina, recarregar a lista de produtos.
+   */
+  ionViewDidLoad() {
+    this._buscaProdutos();
+  }
+
+  private _buscaProdutos() {
+    this.listaProdutos = null;
+    this._notificacaoProvider.mostraLoading();
+    this._produtoProvider.getListaProduto().then(listaProdutos => {
+      this._notificacaoProvider.escondeLoading();
+      console.log(this.listaProdutos);
+      this.listaProdutos = listaProdutos;
+    }).catch(err => {
+      console.error(err);
+      this._notificacaoProvider.escondeLoading();
+    })
   }
 
   /**
@@ -65,21 +82,21 @@ export class ListaProdutoPage {
     this.navCtrl.push("NovoProdutoPage");
   }
 
-  public deletarProduto(produto: ProdutoModel) {
-  
-    this._produtoProvider.deleteProduto(produto);
-  
-  }
-
   /**
-   * Remove um produto.
-   * @returns promise com mensagem de sucesso ou falha;
-   * @param produtoId é o produto que deverá ser removido
+   * Remove o produto do sistema
+   * @param produto a ser removido
    */
-  public removeProduto(produtoId: string) {
-    let msg: MensageModel = { msg: "Produto removido com sucesso", type: MensagemTipo.info };
-    this._notificacaoProvider.mostraMensagem(msg);
+  public deletarProduto(produto: ProdutoModel) {
+    if (confirm("Deseja remover " + produto.description)) {
+      this._notificacaoProvider.mostraLoading();
+      this._produtoProvider.deleteProduto(produto).then(succ => {
+        this._notificacaoProvider.escondeLoading();
+        this._notificacaoProvider.mostraMensagem(succ);
+      }).catch(err => {
+        this._notificacaoProvider.escondeLoading();
+        this._notificacaoProvider.mostraMensagem(err);
+      })
+    }
   }
-
 
 }

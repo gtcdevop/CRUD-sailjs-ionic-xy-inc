@@ -1,11 +1,12 @@
+import { ListaProdutoPage } from './../lista-produto/lista-produto';
 import { MensageModel, MensagemTipo } from './../../providers/notificacao/notificacao';
 import { ProdutoProvider } from './../../providers/produto/produto';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ProdutoModel } from '../../providers/produto/ProdutoModel';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HomePage } from '../home/home';
 import { NotificacaoProvider } from '../../providers/notificacao/notificacao';
+import { HomePage } from '../home/home';
 
 @IonicPage()
 @Component({
@@ -29,6 +30,10 @@ export class NovoProdutoPage {
   }
 
 
+
+  /**
+   * construtor do formulário de dados
+   */
   private _setFormBuilder(): void {
     this.produtoForm = this.formBuilder.group({
       // Descricao do Form
@@ -52,7 +57,7 @@ export class NovoProdutoPage {
   }
 
   /**
-   * configurar o produtoModel que será editado
+   * configurar o produtoModel que será editado quando o mesmo é passado via parametro
    */
   private _getNavParamProduto(): void {
     if (this.navParams.get("produto")) {
@@ -79,20 +84,29 @@ export class NovoProdutoPage {
    */
   public salvar() {
     if (this.produtoForm.valid) {
+      this._notificacaoProvider.mostraLoading();
       let promiseResult: Promise<MensageModel>;
       if (this.produtoEditado && this.produtoEditado.id) {
         promiseResult = this._produtoProvider.editaProduto(this.produtoForm.getRawValue(), this.produtoEditado.id);
       } else {
         promiseResult = this._produtoProvider.adicionaProduto(this.produtoForm.getRawValue());
       }
-      promiseResult.then(msg => {
-        this._notificacaoProvider.mostraMensagem(msg);
+      promiseResult.then(data => {
+        let produto: ProdutoModel = (data as any) as ProdutoModel;
+        if (this.produtoEditado) {
+          this._notificacaoProvider.mostraMensagem({ msg: "Produto " + produto.name + " cadastrado com sucesso !", type: MensagemTipo.sucesso });
+        } else {
+          this._notificacaoProvider.mostraMensagem({ msg: "Produto " + produto.name + " editado com sucesso !", type: MensagemTipo.sucesso });
+        }
+        this._notificacaoProvider.escondeLoading();
       }).catch(err => {
+        console.log("ERRRO", err);
         this._notificacaoProvider.mostraMensagem(err);
+        this._notificacaoProvider.escondeLoading();
       })
     } else {
       // mostrar mensagem de inválidl
-      this._notificacaoProvider.mostraMensagem({ msg: "", type: MensagemTipo.erro });
+      this._notificacaoProvider.mostraMensagem({ msg: "Formulário esta inválido", type: MensagemTipo.erro });
     }
   }
 }

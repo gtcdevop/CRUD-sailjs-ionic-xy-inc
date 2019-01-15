@@ -30,6 +30,7 @@ export interface ErroModel {
 app.use(function (req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+      res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
       next();
 });
 
@@ -86,7 +87,7 @@ app.put("/" + produtoCollection + "/:idProduto", (req, res) => {
 
       if (id) {
             return firebaseHelper.firestore
-                  .updateDocument(db, produtoCollection, req.query.idProduto, req.body).then(opa => {
+                  .updateDocument(db, produtoCollection, id, req.body).then(opa => {
                         res.status(200).send('Produto atualizado ' + JSON.stringify(opa));
                   }).catch(err => {
                         console.error(err);

@@ -21,7 +21,7 @@ export class ProdutoProvider {
       this.http.get<ProdutoModel[]>(apiRequest.url + "produtos/").subscribe(data => {
         console.log(data);
         if (data) {
-          return data.map(cadaProduto => {
+          let dadoRemapeado = data.map(cadaProduto => {
             if (cadaProduto.price) {
               cadaProduto.price = parseFloat(cadaProduto.price.toString());
             } else {
@@ -29,14 +29,16 @@ export class ProdutoProvider {
             }
             return cadaProduto;
           })
+          accept(dadoRemapeado as ProdutoModel[]);// Busquei data
+        } else {
+          accept([]);
         }
-        accept((data as ProdutoModel[]));// Busquei data
       }, (error) => {
         console.log("getListaProduto ", error, "Tentativa", tentativa);
         setTimeout(() => {
           tentativa++;
           if (tentativa < this.QUANTIDADE_MAX_TENTATIVA) {
-            this.getListaProduto(tentativa)
+            this.getListaProduto(tentativa);
           } else {
             let msg: MensageModel = { msg: "Erro ao ler", type: MensagemTipo.erro };
             reject(msg);
@@ -48,24 +50,72 @@ export class ProdutoProvider {
 
   public editaProduto(produto: ProdutoModel, idProduto: string, tentativa = 0): Promise<any> {
     return new Promise((accept, reject) => {
-
+      this.http.put<ProdutoModel>(apiRequest.url + "produtos/" + idProduto, produto).subscribe(data => {
+        console.log(data);
+        if (data) {
+          data.id = idProduto;
+        }
+        accept((data as ProdutoModel));// Salvei o dado
+      }, (error) => {
+        console.log("editaProduto ", error, "Tentativa", tentativa);
+        setTimeout(() => {
+          tentativa++;
+          if (tentativa < this.QUANTIDADE_MAX_TENTATIVA) {
+            this.editaProduto(produto, idProduto, tentativa);
+          } else {
+            let msg: MensageModel = { msg: "Erro ao editar produto", type: MensagemTipo.erro };
+            reject(msg);
+          }
+        }, 500 * tentativa)
+      })
     });
   }
 
+
+
+  /**
+   * Adiciona o produto na api.
+   * @param produto:ProdutoModel = instancia completa do produto.
+   * @param tentativa quantidade de tentativas recursivas para realizar a operação.
+   */
   public adicionaProduto(produto: ProdutoModel, tentativa = 0): Promise<any> {
     //removve id, se presente no produto
     return new Promise((accept, reject) => {
-
-
+      this.http.post<ProdutoModel>(apiRequest.url + "produtos/", produto).subscribe(data => {
+        console.log(data); //TODO(gustavo) verificar como vem o dado
+        accept((data as ProdutoModel));// Salvei o dado
+      }, (error) => {
+        console.error("adicionaProduto ", error, "Tentativa", tentativa);
+        setTimeout(() => {
+          tentativa++;
+          if (tentativa < this.QUANTIDADE_MAX_TENTATIVA) {
+            this.adicionaProduto(produto, tentativa);
+          } else {
+            let msg: MensageModel = { msg: "Erro ao adicionar o produto", type: MensagemTipo.erro, stackTrace: error };
+            reject(msg);
+          }
+        }, 500 * tentativa)
+      })
     });
-
   }
 
   public deleteProduto(produto: ProdutoModel, tentativa = 0): Promise<any> {
     // deleta o produto
     return new Promise((accept, reject) => {
+      this.http.delete(apiRequest.url + "produtos/" + produto.id).subscribe(data => {
+        accept();// Dado removido com sucesso
+      }, (error) => {
+        console.log("deleteProduto ", error, "Tentativa", tentativa);
+        setTimeout(() => {
+          tentativa++;
+          if (tentativa < this.QUANTIDADE_MAX_TENTATIVA) {
+            this.deleteProduto(produto, tentativa);
+          } else {
+            let msg: MensageModel = { msg: "Erro ao remover produto", type: MensagemTipo.erro };
+            reject(msg);
+          }
+        }, 500 * tentativa)
+      })
     });
-
   }
-
 }

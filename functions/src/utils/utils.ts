@@ -5,7 +5,9 @@ export class Utils {
 
 
    public static getIdNoRequest(req: Request): string {
-      if (req.query && req.query.idProduto) {
+      if (req.param && req.params.idProduto) {
+         return req.params.idProduto;
+      } else if (req.query && req.query.idProduto) {
          return req.query.idProduto;
       } else if (req.body && req.body.id) {
          return req.body.id;
