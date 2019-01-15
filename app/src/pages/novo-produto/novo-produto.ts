@@ -91,18 +91,19 @@ export class NovoProdutoPage {
       } else {
         promiseResult = this._produtoProvider.adicionaProduto(this.produtoForm.getRawValue());
       }
-      promiseResult.then(data => {
-        let produto: ProdutoModel = (data as any) as ProdutoModel;
-        if (this.produtoEditado) {
-          this._notificacaoProvider.mostraMensagem({ msg: "Produto " + produto.name + " cadastrado com sucesso !", type: MensagemTipo.sucesso });
-        } else {
-          this._notificacaoProvider.mostraMensagem({ msg: "Produto " + produto.name + " editado com sucesso !", type: MensagemTipo.sucesso });
-        }
+      promiseResult.then(msg => {
+        this._notificacaoProvider.mostraMensagem(msg);
         this._notificacaoProvider.escondeLoading();
+        setTimeout(() => {
+          this.navCtrl.pop().catch(() => {
+            this.navCtrl.setRoot(HomePage)
+          });
+        })
       }).catch(err => {
-        console.log("ERRRO", err);
         this._notificacaoProvider.mostraMensagem(err);
         this._notificacaoProvider.escondeLoading();
+        this.navCtrl.setRoot(HomePage)
+
       })
     } else {
       // mostrar mensagem de inválidl

@@ -84,11 +84,13 @@ app.put("/" + produtoCollection + "/:idProduto", (req, res) => {
       // verificar se Id esta presente na requisicao ou no body
       const id = Utils.getIdNoRequest(req);
       // Verificar body
-
+      console.log(produtoCollection, id, req.body);
       if (id) {
             return firebaseHelper.firestore
-                  .updateDocument(db, produtoCollection, id, req.body).then(opa => {
-                        res.status(200).send('Produto atualizado ' + JSON.stringify(opa));
+                  .updateDocument(db, "/" + produtoCollection, id, req.body).then(opa => {
+                        if (opa) {
+                              res.status(200).send(opa);
+                        }
                   }).catch(err => {
                         console.error(err);
                         res.status(400).send(JSON.stringify(err));
@@ -102,7 +104,7 @@ app.put("/" + produtoCollection + "/:idProduto", (req, res) => {
 // Deletar um produto
 app.delete('/' + produtoCollection + '/:idProduto', (req, res) => {
       return firebaseHelper.firestore
-            .deleteDocument(db, produtoCollection, req.params.idProduto).then(succ => {
+            .deleteDocument(db, "/" + produtoCollection, req.params.idProduto).then(succ => {
                   res.status(204).send('Documento deletado' + JSON.stringify(succ));
             }).catch(err => {
                   res.status(400).send('ERRO' + JSON.stringify(err));
@@ -112,7 +114,7 @@ app.delete('/' + produtoCollection + '/:idProduto', (req, res) => {
 // Buscar um unico produto
 app.get('/' + produtoCollection + '/:idProduto', (req, res) => {
       firebaseHelper.firestore
-            .getDocument(db, produtoCollection, req.params.idProduto)
+            .getDocument(db, "/" +produtoCollection, req.params.idProduto)
             .then(doc => {
                   if (doc) {
                         const produtoModel: ProdutoModel = {

@@ -50,12 +50,15 @@ export class ProdutoProvider {
 
   public editaProduto(produto: ProdutoModel, idProduto: string, tentativa = 0): Promise<any> {
     return new Promise((accept, reject) => {
-      this.http.put<ProdutoModel>(apiRequest.url + "produtos/" + idProduto, produto).subscribe(data => {
+      this.http.put(apiRequest.url + "produtos/" + idProduto, produto).subscribe(data => {
         console.log(data);
-        if (data) {
-          data.id = idProduto;
+        if (data == true) {
+          let msg: MensageModel = { msg: "Edição de produto " + produto.name + " realizada com sucesso! ", type: MensagemTipo.sucesso };
+          accept(msg);// Salvei o dado
+        } else {
+          let msg: MensageModel = { msg: "Erro ao atualizar produto ", type: MensagemTipo.alerta };
+          reject(msg);
         }
-        accept((data as ProdutoModel));// Salvei o dado
       }, (error) => {
         console.log("editaProduto ", error, "Tentativa", tentativa);
         setTimeout(() => {

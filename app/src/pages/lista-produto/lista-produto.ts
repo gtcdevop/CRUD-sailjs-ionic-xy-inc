@@ -14,32 +14,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class ListaProdutoPage {
 
-  public listaProdutos: ProdutoModel[];
-
-  // [
-  //   {
-  //     id: "Id1",
-  //     name: "Nome do Produto",
-  //     description: "Descricao",
-  //     price: 10,
-  //     category: "Products"
-  //   },
-  //   {
-  //     id: "Id2",
-  //     name: "Nome do Produto2",
-  //     description: "Descricao",
-  //     price: 10,
-  //     category: "Products"
-  //   },
-
-  //   {
-  //     id: "Id3",
-  //     name: "Nome do Produto3",
-  //     description: "Descricao",
-  //     price: 10,
-  //     category: "Products"
-  //   },
-  // ];
+  public listaProdutos: ProdutoModel[]; // lista de produto presente na UI
 
   constructor(public navCtrl: NavController,
     private _notificacaoProvider: NotificacaoProvider,
@@ -51,13 +26,20 @@ export class ListaProdutoPage {
    * Ao carregar a pagina, recarregar a lista de produtos.
    */
   ionViewDidLoad() {
+    console.log("Lista Produto")
     this._buscaProdutos();
   }
 
-  private _buscaProdutos() {
+  ionViewWillEnter() {
+    console.log("Lista Produto")
+    this._buscaProdutos();
+  }
+
+  private _buscaProdutos(): Promise<any> {
     this.listaProdutos = null;
     this._notificacaoProvider.mostraLoading();
-    this._produtoProvider.getListaProduto().then(listaProdutos => {
+    let promise: Promise<any> = this._produtoProvider.getListaProduto();
+    promise.then(listaProdutos => {
       this._notificacaoProvider.escondeLoading();
       console.log(this.listaProdutos);
       this.listaProdutos = listaProdutos;
@@ -65,6 +47,7 @@ export class ListaProdutoPage {
       console.error(err);
       this._notificacaoProvider.escondeLoading();
     })
+    return promise;
   }
 
   /**
@@ -90,8 +73,13 @@ export class ListaProdutoPage {
     if (confirm("Deseja remover " + produto.description)) {
       this._notificacaoProvider.mostraLoading();
       this._produtoProvider.deleteProduto(produto).then(succ => {
-        this._notificacaoProvider.escondeLoading();
-        this._notificacaoProvider.mostraMensagem(succ);
+        this._buscaProdutos().then(() => {
+          this._notificacaoProvider.escondeLoading();
+          this._notificacaoProvider.mostraMensagem(succ);
+        }).catch(err => {
+          this._notificacaoProvider.escondeLoading();
+          this._notificacaoProvider.mostraMensagem(err);
+        });
       }).catch(err => {
         this._notificacaoProvider.escondeLoading();
         this._notificacaoProvider.mostraMensagem(err);
