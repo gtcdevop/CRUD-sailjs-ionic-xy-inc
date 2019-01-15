@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { ProdutoModel } from '../../providers/produto/ProdutoModel';
 
 /**
  * Generated class for the NovoProdutoPage page.
@@ -15,11 +16,16 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class NovoProdutoPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+  public produtoEditado: ProdutoModel = null;
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad NovoProdutoPage');
+  constructor(public navCtrl: NavController, public navParams: NavParams) {
+
+    if (this.navParams.get("produto")) {
+      this.produtoEditado = this.navParams.get("produto") as ProdutoModel;
+      console.log("Edita produto", this.produtoEditado);
+    } else {
+      console.log("Adiciona novo produto");
+    }
   }
 
 }

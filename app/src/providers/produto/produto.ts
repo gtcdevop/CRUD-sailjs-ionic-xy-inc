@@ -18,25 +18,32 @@ export class ProdutoProvider {
   */
   public getListaProduto(tentativa = 0): Promise<any> {
     return new Promise((accept, reject) => {
-      return new Promise((accept, reject) => {
-        this.http.get(apiRequest.url + "produtos/").subscribe(data => {
-          console.log(data);
-          accept((data as ProdutoModel[]));// Busquei data
-        }, (error) => {
-          console.log("getListaProduto ", error, "Tentativa", tentativa);
-          setTimeout(() => {
-            tentativa++;
-            if (tentativa < this.QUANTIDADE_MAX_TENTATIVA) {
-              this.getListaProduto(tentativa)
+      this.http.get<ProdutoModel[]>(apiRequest.url + "produtos/").subscribe(data => {
+        console.log(data);
+        if (data) {
+          return data.map(cadaProduto => {
+            if (cadaProduto.price) {
+              cadaProduto.price = parseFloat(cadaProduto.price.toString());
             } else {
-              let msg: MensageModel = { msg: "Erro ao ler", type: MensagemTipo.erro };
-              reject(msg);
+              cadaProduto.price = 0;
             }
-          }, 500 * tentativa)
-        })
+            return cadaProduto;
+          })
+        }
+        accept((data as ProdutoModel[]));// Busquei data
+      }, (error) => {
+        console.log("getListaProduto ", error, "Tentativa", tentativa);
+        setTimeout(() => {
+          tentativa++;
+          if (tentativa < this.QUANTIDADE_MAX_TENTATIVA) {
+            this.getListaProduto(tentativa)
+          } else {
+            let msg: MensageModel = { msg: "Erro ao ler", type: MensagemTipo.erro };
+            reject(msg);
+          }
+        }, 500 * tentativa)
       })
     })
   }
-
 
 }

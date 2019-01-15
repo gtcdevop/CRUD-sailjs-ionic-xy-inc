@@ -7,12 +7,22 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>novoProduto</ion-title>
+    <ion-title *ngIf="!produtoEditado">Novo Produto</ion-title>
+    <ion-title *ngIf="produtoEditado">Edita Produto</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+
+  <form [formGroup]="produtoForm">
+    <ion-item>
+      <ion-item>
+        <ion-label stacked>Nome do Produto</ion-label>
+        <ion-input formControlName="name" type="text"></ion-input>
+      </ion-item>
+    </ion-item>
+  </form>
 
 </ion-content>

@@ -4,6 +4,7 @@ import * as admin from 'firebase-admin';
 import * as firebaseHelper from 'firebase-functions-helper';
 import * as express from 'express';
 import * as bodyParser from "body-parser";
+import * as  cors from 'cors';
 import { Utils } from "./utils/utils";
 
 admin.initializeApp(functions.config().firebase);
@@ -32,6 +33,7 @@ export interface ErroModel {
 main.use('/v1', app);
 main.use(bodyParser.json());
 main.use(bodyParser.urlencoded({ extended: false }));
+main.use(cors());
 
 // Salvar um produto
 app.post('/' + produtoCollection, (req, res) => {

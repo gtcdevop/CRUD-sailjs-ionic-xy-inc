@@ -10,6 +10,14 @@
     <ion-title>listaProduto</ion-title>
   </ion-navbar>
 
+  <ion-buttons end>
+
+    <button (click)="paginaAdicionaProduto()" ion-button icon-only>
+      <ion-icon *ngIf="!online" name="alert"></ion-icon>
+    </button>
+
+  </ion-buttons>
+
 </ion-header>
 
 
@@ -17,14 +25,22 @@
 
   <ion-list>
     <ion-item *ngFor="let cadaProduto of listaProdutos " (click)="editaProduto(cadaProduto)">
-      <ion-avatar item-left>
-
-
-        <img src="">
-      </ion-avatar>
-      <h2></h2>
-      <p></p>
-
+      <ion-grid>
+        <ion-row>
+          <ion-col col-7>
+            <h2>{{cadaProduto.name}}</h2>
+            <p>{{cadaProduto.description}}</p>
+          </ion-col>
+          <ion-col col-3>
+            R$ {{cadaProduto.price}}
+          </ion-col>
+          <ion-col col-2>
+            <button ion-button icon-only>
+              <ion-icon name="close"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
   </ion-list>
 </ion-content>
