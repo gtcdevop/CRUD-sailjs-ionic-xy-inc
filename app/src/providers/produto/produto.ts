@@ -46,4 +46,26 @@ export class ProdutoProvider {
     })
   }
 
+  public editaProduto(produto: ProdutoModel, idProduto: string, tentativa = 0): Promise<any> {
+    return new Promise((accept, reject) => {
+
+    });
+  }
+
+  public adicionaProduto(produto: ProdutoModel, tentativa = 0): Promise<any> {
+    //removve id, se presente no produto
+    return new Promise((accept, reject) => {
+
+
+    });
+
+  }
+
+  public deleteProduto(produto: ProdutoModel, tentativa = 0): Promise<any> {
+    // deleta o produto
+    return new Promise((accept, reject) => {
+    });
+
+  }
+
 }

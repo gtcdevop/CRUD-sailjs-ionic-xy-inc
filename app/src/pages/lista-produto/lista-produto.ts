@@ -1,6 +1,6 @@
+import { ProdutoModel } from './../../providers/produto/ProdutoModel';
 import { NotificacaoProvider, MensageModel, MensagemTipo } from './../../providers/notificacao/notificacao';
 import { ProdutoProvider } from './../../providers/produto/produto';
-import { ProdutoModel } from './../../../../functions/src/index';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
@@ -44,6 +44,7 @@ export class ListaProdutoPage {
     private _produtoProvider: ProdutoProvider) {
 
     this._produtoProvider.getListaProduto().then(listaProdutos => {
+      console.log(this.listaProdutos)
       this.listaProdutos = listaProdutos
     })
 
@@ -62,6 +63,12 @@ export class ListaProdutoPage {
    */
   public paginaAdicionaProduto() {
     this.navCtrl.push("NovoProdutoPage");
+  }
+
+  public deletarProduto(produto: ProdutoModel) {
+  
+    this._produtoProvider.deleteProduto(produto);
+  
   }
 
   /**
